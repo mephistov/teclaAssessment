@@ -1,4 +1,4 @@
-package com.example.teclaassessment
+package com.example.teclaassessment.presentation
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
