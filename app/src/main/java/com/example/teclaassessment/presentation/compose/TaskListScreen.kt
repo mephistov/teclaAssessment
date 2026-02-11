@@ -172,59 +172,6 @@ private fun TaskList(
 }
 
 @Composable
-fun TaskItem(
-    task: TaskModel,
-    onToggle: () -> Unit,
-    onDelete: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Card(
-        modifier = modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Checkbox(
-                checked = task.isCompleted,
-                onCheckedChange = { onToggle() }
-            )
-
-            Spacer(modifier = Modifier.width(8.dp))
-
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = task.title,
-                    style = MaterialTheme.typography.titleMedium,
-                    textDecoration = if (task.isCompleted) {
-                        TextDecoration.LineThrough
-                    } else null
-                )
-
-                if (task.description.isNotEmpty()) {
-                    Text(
-                        text = task.description,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-            }
-
-            IconButton(onClick = onDelete) {
-                Icon(
-                    Icons.Default.Delete,
-                    contentDescription = "Delete",
-                    tint = MaterialTheme.colorScheme.error
-                )
-            }
-        }
-    }
-}
-
-@Composable
 private fun EmptyState(modifier: Modifier = Modifier) {
     Box(
         modifier = modifier.fillMaxSize(),
@@ -268,18 +215,6 @@ private fun TaskListScreenEmptyPreview() {
             onTaskDelete = {},
             onTaskAdd = { _, _ -> },
             onErrorDismiss = {}
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun TaskItemPreview() {
-    TeclaAssessmentTheme {
-        TaskItem(
-            task = TaskModel(1, "example task", "Description", false),
-            onToggle = {},
-            onDelete = {}
         )
     }
 }

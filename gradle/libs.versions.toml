@@ -3,6 +3,7 @@ agp = "8.13.2"
 kotlin = "2.0.21"
 coreKtx = "1.10.1"
 junit = "4.13.2"
+mockk_version = "1.13.13"
 junitVersion = "1.3.0"
 espressoCore = "3.5.1"
 lifecycleRuntimeKtx = "2.6.1"
@@ -12,12 +13,13 @@ ksp_version = "2.0.21-1.0.28"
 room_version = "2.6.1"
 hilt_version = "2.52"
 androidx_hilt_version = "1.2.0"
+courutineTest = "1.9.0"
+turbine_version = "1.2.0"
+arch_version = "2.2.0"
 
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
-junit = { group = "junit", name = "junit", version.ref = "junit" }
-androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
 androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
@@ -37,6 +39,14 @@ androidx-room-compiler = { group = "androidx.room", name = "room-compiler", vers
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt_version" }
 hilt-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hilt_version" }
 androidx-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "androidx_hilt_version" }
+# Testing
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
+mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk_version" }
+kotlin-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "courutineTest" }
+testing-turbine = { group = "app.cash.turbine", name = "turbine", version.ref = "turbine_version" }
+testing-arch = { group = "androidx.arch.core", name = "core-testing", version.ref = "arch_version" }
+
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
