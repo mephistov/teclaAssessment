@@ -36,12 +36,15 @@ class MainActivity : ComponentActivity() {
 fun TaskListRoute(
     viewModel: TaskViewModel = hiltViewModel()
 ) {
+    val uiState by viewModel.uiState.collectAsState()
     val tasks by viewModel.allTasks.collectAsState()
 
     TaskListScreen(
         tasks = tasks,
+        uiState = uiState,
         onTaskToggle = viewModel::toggleTaskCompletion,
         onTaskDelete = viewModel::deleteTask,
-        onTaskAdd = viewModel::insertTask
+        onTaskAdd = viewModel::insertTask,
+        onErrorDismiss = viewModel::clearErrorMessage
     )
 }

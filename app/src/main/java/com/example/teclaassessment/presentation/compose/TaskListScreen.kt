@@ -29,6 +29,10 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -40,21 +44,47 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.teclaassessment.R
 import com.example.teclaassessment.domain.models.TaskModel
+import com.example.teclaassessment.presentation.viewmodels.TaskUiState
 import com.example.teclaassessment.ui.theme.TeclaAssessmentTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TaskListScreen(
     tasks: List<TaskModel>,
+    uiState: TaskUiState,
     onTaskToggle: (TaskModel) -> Unit,
     onTaskDelete: (TaskModel) -> Unit,
     onTaskAdd: (String, String) -> Unit,
+    onErrorDismiss: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     var showDialog by remember { mutableStateOf(false) }
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    // Show snackbar for errors
+    LaunchedEffect(uiState.errorMessage) {
+        uiState.errorMessage?.let { message ->
+            snackbarHostState.showSnackbar(
+                message = message,
+                duration = SnackbarDuration.Long
+            )
+            onErrorDismiss()
+        }
+    }
+
+    // Show snackbar for success
+    LaunchedEffect(uiState.successMessage) {
+        uiState.successMessage?.let { message ->
+            snackbarHostState.showSnackbar(
+                message = message,
+                duration = SnackbarDuration.Short
+            )
+        }
+    }
 
     Scaffold(
         modifier = modifier,
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(R.string.new_task)) },
@@ -65,12 +95,23 @@ fun TaskListScreen(
             )
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = { showDialog = true }) {
-                Icon(Icons.Default.Add, contentDescription = "Agregar tarea")
+            FloatingActionButton(
+                onClick = { showDialog = true },
+                // Disable FAB while loading
+                containerColor = if (uiState.isLoading) {
+                    MaterialTheme.colorScheme.surfaceVariant
+                } else {
+                    MaterialTheme.colorScheme.primaryContainer
+                }
+            ) {
+                Icon(
+                    Icons.Default.Add,
+                    contentDescription = stringResource(R.string.add_task)
+                )
             }
         }
     ) { padding ->
-        if (tasks.isEmpty()) {
+        if (tasks.isEmpty() && !uiState.isLoading) {
             EmptyState(modifier = Modifier.padding(padding))
         } else {
             TaskList(
@@ -82,16 +123,28 @@ fun TaskListScreen(
         }
     }
 
+    // Show dialog
     if (showDialog) {
         AddTaskDialog(
-            onDismiss = { showDialog = false },
+            isLoading = uiState.isLoading,
+            onDismiss = {
+                if (!uiState.isLoading) showDialog = false
+            },
             onConfirm = { title, description ->
                 onTaskAdd(title, description)
-                showDialog = false
+                // Dialog will close on success via LaunchedEffect
             }
         )
+
+        // Auto-close dialog on success
+        LaunchedEffect(uiState.successMessage) {
+            if (uiState.successMessage != null) {
+                showDialog = false
+            }
+        }
     }
 }
+
 
 @Composable
 private fun TaskList(
@@ -195,9 +248,11 @@ private fun TaskListScreenPreview() {
                 TaskModel(2, "Do some excersise", "30 minuts", true),
                 TaskModel(3, "Study Kotlin", "Advance compose", false)
             ),
+            uiState = TaskUiState(isLoading = false, errorMessage = null, successMessage = null),
             onTaskToggle = {},
             onTaskDelete = {},
-            onTaskAdd = { _, _ -> }
+            onTaskAdd = { _, _ -> },
+            onErrorDismiss = {}
         )
     }
 }
@@ -208,9 +263,11 @@ private fun TaskListScreenEmptyPreview() {
     TeclaAssessmentTheme {
         TaskListScreen(
             tasks = emptyList(),
+            uiState = TaskUiState(isLoading = false, errorMessage = null, successMessage = null),
             onTaskToggle = {},
             onTaskDelete = {},
-            onTaskAdd = { _, _ -> }
+            onTaskAdd = { _, _ -> },
+            onErrorDismiss = {}
         )
     }
 }

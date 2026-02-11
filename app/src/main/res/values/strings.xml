@@ -1,5 +1,13 @@
 <resources>
     <string name="app_name">TeclaAssessment</string>
     <string name="new_task">Task list</string>
+    <string name="add_task">add task</string>
+    <string name="save">save</string>
+    <string name="cancel">Cancel</string>
+    <string name="title_label">Title *</string>
+    <string name="title_placeholder">Ex: Buy Milk</string>
+    <string name="title_required_error">Required</string>
+    <string name="description_label">Description</string>
+    <string name="description_placeholder">Ex: From the corner market</string>
 
 </resources>
