@@ -34,9 +34,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.teclaassessment.R
 import com.example.teclaassessment.domain.models.TaskModel
 import com.example.teclaassessment.ui.theme.TeclaAssessmentTheme
 
@@ -55,7 +57,7 @@ fun TaskListScreen(
         modifier = modifier,
         topBar = {
             TopAppBar(
-                title = { Text("Lista de Tareas") },
+                title = { Text(stringResource(R.string.new_task)) },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
                     titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
@@ -81,17 +83,16 @@ fun TaskListScreen(
     }
 
     if (showDialog) {
-       /* AddTaskDialog(
+        AddTaskDialog(
             onDismiss = { showDialog = false },
             onConfirm = { title, description ->
                 onTaskAdd(title, description)
                 showDialog = false
             }
-        )*/
+        )
     }
 }
 
-// ✅ Componente stateless reutilizable
 @Composable
 private fun TaskList(
     tasks: List<TaskModel>,
@@ -117,7 +118,6 @@ private fun TaskList(
     }
 }
 
-// ✅ Componente stateless puro
 @Composable
 fun TaskItem(
     task: TaskModel,
@@ -163,7 +163,7 @@ fun TaskItem(
             IconButton(onClick = onDelete) {
                 Icon(
                     Icons.Default.Delete,
-                    contentDescription = "Eliminar",
+                    contentDescription = "Delete",
                     tint = MaterialTheme.colorScheme.error
                 )
             }
@@ -178,23 +178,22 @@ private fun EmptyState(modifier: Modifier = Modifier) {
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text = "No hay tareas.\n¡Agrega una nueva!",
+            text = "No tasks.\n¡Add a new one!",
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
     }
 }
 
-// ✅ PREVIEWS - Ahora son posibles porque no dependen del ViewModel
 @Preview(showBackground = true)
 @Composable
 private fun TaskListScreenPreview() {
     TeclaAssessmentTheme {
         TaskListScreen(
             tasks = listOf(
-                TaskModel(1, "Comprar leche", "En el supermercado", false),
-                TaskModel(2, "Hacer ejercicio", "30 minutos", true),
-                TaskModel(3, "Estudiar Kotlin", "Compose avanzado", false)
+                TaskModel(1, "Buy Milk", "In the supermarket", false),
+                TaskModel(2, "Do some excersise", "30 minuts", true),
+                TaskModel(3, "Study Kotlin", "Advance compose", false)
             ),
             onTaskToggle = {},
             onTaskDelete = {},
@@ -221,7 +220,7 @@ private fun TaskListScreenEmptyPreview() {
 private fun TaskItemPreview() {
     TeclaAssessmentTheme {
         TaskItem(
-            task = TaskModel(1, "Tarea de ejemplo", "Descripción", false),
+            task = TaskModel(1, "example task", "Description", false),
             onToggle = {},
             onDelete = {}
         )

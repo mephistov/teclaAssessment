@@ -1,5 +1,5 @@
 <resources>
     <string name="app_name">TeclaAssessment</string>
-    <string name="new_task">Task list</string>
+    <string name="new_task">Lista tareas</string>
 
 </resources>
