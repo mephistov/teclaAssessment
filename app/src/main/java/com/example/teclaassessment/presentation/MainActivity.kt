@@ -9,8 +9,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.teclaassessment.presentation.compose.TaskListScreen
+import com.example.teclaassessment.presentation.viewmodels.TaskViewModel
 import com.example.teclaassessment.ui.theme.TeclaAssessmentTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -21,29 +26,22 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             TeclaAssessmentTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
+                TaskListRoute()
             }
         }
     }
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
+fun TaskListRoute(
+    viewModel: TaskViewModel = hiltViewModel()
+) {
+    val tasks by viewModel.allTasks.collectAsState()
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    TeclaAssessmentTheme {
-        Greeting("Android")
-    }
+    TaskListScreen(
+        tasks = tasks,
+        onTaskToggle = viewModel::toggleTaskCompletion,
+        onTaskDelete = viewModel::deleteTask,
+        onTaskAdd = viewModel::insertTask
+    )
 }
