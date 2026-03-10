@@ -11,9 +11,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.teclaassessment.presentation.compose.TaskListEvent
 import com.example.teclaassessment.presentation.compose.TaskListScreen
 import com.example.teclaassessment.presentation.viewmodels.TaskViewModel
 import com.example.teclaassessment.ui.theme.TeclaAssessmentTheme
@@ -38,13 +41,18 @@ fun TaskListRoute(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val tasks by viewModel.allTasks.collectAsState()
+    val tasksList = remember(tasks) { tasks.toMutableStateList() }
 
     TaskListScreen(
-        tasks = tasks,
+        tasks = tasksList,
         uiState = uiState,
-        onTaskToggle = viewModel::toggleTaskCompletion,
-        onTaskDelete = viewModel::deleteTask,
-        onTaskAdd = viewModel::insertTask,
-        onErrorDismiss = viewModel::clearErrorMessage
+        onEvent = { event ->
+            when (event) {
+                is TaskListEvent.OnTaskToggle -> viewModel.toggleTaskCompletion(event.task)
+                is TaskListEvent.OnTaskDelete -> viewModel.deleteTask(event.task)
+                is TaskListEvent.OnTaskAdd -> viewModel.insertTask(event.title, event.description)
+                TaskListEvent.OnErrorDismiss -> viewModel.clearErrorMessage()
+            }
+        }
     )
 }

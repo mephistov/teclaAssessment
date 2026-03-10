@@ -9,5 +9,16 @@
     <string name="title_required_error">Required</string>
     <string name="description_label">Description</string>
     <string name="description_placeholder">Ex: From the corner market</string>
+    
+    <!-- Validation errors -->
+    <string name="error_title_too_long">Title cannot exceed %d characters</string>
+    <string name="error_description_too_long">Description cannot exceed %d characters</string>
+    <string name="error_title_empty">Title cannot be empty</string>
+    
+    <!-- Success messages -->
+    <string name="task_added_success">Task added successfully!</string>
+    
+    <!-- Generic errors -->
+    <string name="error_unknown">An unknown error occurred</string>
 
 </resources>

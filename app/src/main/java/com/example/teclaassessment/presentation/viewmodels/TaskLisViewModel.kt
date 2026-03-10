@@ -1,9 +1,12 @@
 package com.example.teclaassessment.presentation.viewmodels
 
+import android.app.Application
 import androidx.lifecycle.ViewModel
 
 import androidx.lifecycle.viewModelScope
+import com.example.teclaassessment.R
 import com.example.teclaassessment.domain.models.TaskModel
+import com.example.teclaassessment.domain.models.ValidationError
 import com.example.teclaassessment.domain.usecase.DeleteTaskUseCase
 import com.example.teclaassessment.domain.usecase.GetAllTasksUseCase
 import com.example.teclaassessment.domain.usecase.InsertTaskUseCase
@@ -31,7 +34,8 @@ class TaskViewModel @Inject constructor(
     private val getAllTasksUseCase: GetAllTasksUseCase,
     private val insertTaskUseCase: InsertTaskUseCase,
     private val updateTaskUseCase: UpdateTaskUseCase,
-    private val deleteTaskUseCase: DeleteTaskUseCase
+    private val deleteTaskUseCase: DeleteTaskUseCase,
+    private val application: Application
 ) : ViewModel() {
 
     // Task list from database
@@ -58,7 +62,7 @@ class TaskViewModel @Inject constructor(
                     _uiState.update {
                         it.copy(
                             isLoading = false,
-                            successMessage = "Task added successfully!",
+                            successMessage = application.getString(R.string.task_added_success),
                             errorMessage = null
                         )
                     }
@@ -67,10 +71,19 @@ class TaskViewModel @Inject constructor(
                     clearSuccessMessage()
                 }
                 is Result.Error -> {
+                    val errorMessage = when (val validationError = result.validationError) {
+                        is ValidationError.TitleTooLong -> 
+                            application.getString(R.string.error_title_too_long, validationError.maxLength)
+                        is ValidationError.DescriptionTooLong -> 
+                            application.getString(R.string.error_description_too_long, validationError.maxLength)
+                        is ValidationError.TitleEmpty -> 
+                            application.getString(R.string.error_title_empty)
+                        null -> result.message ?: application.getString(R.string.error_unknown)
+                    }
                     _uiState.update {
                         it.copy(
                             isLoading = false,
-                            errorMessage = result.message,
+                            errorMessage = errorMessage,
                             successMessage = null
                         )
                     }

@@ -12,6 +12,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.runtime.State
+import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.MaterialTheme
@@ -50,12 +53,9 @@ import com.example.teclaassessment.ui.theme.TeclaAssessmentTheme
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TaskListScreen(
-    tasks: List<TaskModel>,
+    tasks: SnapshotStateList<TaskModel>,
     uiState: TaskUiState,
-    onTaskToggle: (TaskModel) -> Unit,
-    onTaskDelete: (TaskModel) -> Unit,
-    onTaskAdd: (String, String) -> Unit,
-    onErrorDismiss: () -> Unit,
+    onEvent: (TaskListEvent) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var showDialog by remember { mutableStateOf(false) }
@@ -68,7 +68,7 @@ fun TaskListScreen(
                 message = message,
                 duration = SnackbarDuration.Long
             )
-            onErrorDismiss()
+            onEvent(TaskListEvent.OnErrorDismiss)
         }
     }
 
@@ -116,8 +116,7 @@ fun TaskListScreen(
         } else {
             TaskList(
                 tasks = tasks,
-                onTaskToggle = onTaskToggle,
-                onTaskDelete = onTaskDelete,
+                onEvent = onEvent,
                 modifier = Modifier.padding(padding)
             )
         }
@@ -131,7 +130,7 @@ fun TaskListScreen(
                 if (!uiState.isLoading) showDialog = false
             },
             onConfirm = { title, description ->
-                onTaskAdd(title, description)
+                onEvent(TaskListEvent.OnTaskAdd(title, description))
                 // Dialog will close on success via LaunchedEffect
             }
         )
@@ -148,9 +147,8 @@ fun TaskListScreen(
 
 @Composable
 private fun TaskList(
-    tasks: List<TaskModel>,
-    onTaskToggle: (TaskModel) -> Unit,
-    onTaskDelete: (TaskModel) -> Unit,
+    tasks: SnapshotStateList<TaskModel>,
+    onEvent: (TaskListEvent) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
@@ -164,8 +162,8 @@ private fun TaskList(
         ) { task ->
             TaskItem(
                 task = task,
-                onToggle = { onTaskToggle(task) },
-                onDelete = { onTaskDelete(task) }
+                onToggle = { onEvent(TaskListEvent.OnTaskToggle(task)) },
+                onDelete = { onEvent(TaskListEvent.OnTaskDelete(task)) }
             )
         }
     }
@@ -190,16 +188,13 @@ private fun EmptyState(modifier: Modifier = Modifier) {
 private fun TaskListScreenPreview() {
     TeclaAssessmentTheme {
         TaskListScreen(
-            tasks = listOf(
+            tasks = remember { mutableStateListOf(
                 TaskModel(1, "Buy Milk", "In the supermarket", false),
                 TaskModel(2, "Do some excersise", "30 minuts", true),
                 TaskModel(3, "Study Kotlin", "Advance compose", false)
-            ),
+            ) },
             uiState = TaskUiState(isLoading = false, errorMessage = null, successMessage = null),
-            onTaskToggle = {},
-            onTaskDelete = {},
-            onTaskAdd = { _, _ -> },
-            onErrorDismiss = {}
+            onEvent = {}
         )
     }
 }
@@ -209,12 +204,9 @@ private fun TaskListScreenPreview() {
 private fun TaskListScreenEmptyPreview() {
     TeclaAssessmentTheme {
         TaskListScreen(
-            tasks = emptyList(),
+            tasks = remember { mutableStateListOf() },
             uiState = TaskUiState(isLoading = false, errorMessage = null, successMessage = null),
-            onTaskToggle = {},
-            onTaskDelete = {},
-            onTaskAdd = { _, _ -> },
-            onErrorDismiss = {}
+            onEvent = {}
         )
     }
 }
